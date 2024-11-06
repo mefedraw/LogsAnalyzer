@@ -1,27 +1,35 @@
-﻿package main
+﻿package Analyzer
 
 import (
+	"NginxLogsAnalyzer/LogsUtil"
+	"NginxLogsAnalyzer/Parsing"
 	"bufio"
 	"fmt"
 	"net/http"
 	"sync"
 )
 
-func AnalyzeUrl(url string) {
+type UrlAnalyzer struct{}
 
-	resp, err := http.Get(url)
+func NewUrlAnalyzer() *UrlAnalyzer {
+	return &UrlAnalyzer{}
+}
+
+func (ua *UrlAnalyzer) Analyze(path string, parser Parsing.LogsParser) *LogsUtil.LogAnalyzerUtil {
+
+	resp, err := http.Get(path)
 	if err != nil {
 		fmt.Println("Ошибка запроса:", err)
-		return
+		return nil
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Ошибка: статус ответа", resp.StatusCode)
-		return
+		return nil
 	}
 
-	logsAnalyzerUtil := NewLogAnalyzerUtil()
+	logsAnalyzerUtil := LogsUtil.NewLogAnalyzerUtil()
 	reader := bufio.NewReader(resp.Body)
 	var wg sync.WaitGroup
 
@@ -30,11 +38,10 @@ func AnalyzeUrl(url string) {
 		if err != nil {
 			break
 		}
-
 		wg.Add(1)
 		go func(line []byte) {
 			defer wg.Done()
-			Parse(string(line), logsAnalyzerUtil)
+			parser.ParseLine(string(line), logsAnalyzerUtil)
 		}(line)
 	}
 
@@ -46,4 +53,6 @@ func AnalyzeUrl(url string) {
 	} else {
 		fmt.Println("Логи не найдены или не обработаны")
 	}
+
+	return logsAnalyzerUtil
 }
