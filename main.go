@@ -1,7 +1,6 @@
 ﻿package main
 
 import (
-	"NginxLogsAnalyzer/Analyzer"
 	"NginxLogsAnalyzer/Parsing"
 )
 
