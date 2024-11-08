@@ -1,7 +1,7 @@
 package Parsing
 
-import "NginxLogsAnalyzer/LogsUtil"
+import "NginxLogsAnalyzer/LogModel"
 
 type LogsParser interface {
-	ParseLine(path string, logAnalyzerUtil *LogsUtil.LogAnalyzerUtil)
+	ParseLine(path string, logAnalyzerUtil *LogsUtil.LogDataCollectUtil)
 }

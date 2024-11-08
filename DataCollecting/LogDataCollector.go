@@ -2,7 +2,7 @@ package DataCollecting
 
 import (
 	"NginxLogsAnalyzer/DataReading"
-	"NginxLogsAnalyzer/LogsUtil"
+	"NginxLogsAnalyzer/LogModel"
 	"NginxLogsAnalyzer/Parsing"
 	"bufio"
 	"runtime"
@@ -12,12 +12,12 @@ import (
 )
 
 type LogDataCollector struct {
-	LogsInfo LogsUtil.LogAnalyzerUtil
+	LogsInfo LogsUtil.LogDataCollectUtil
 }
 
 func NewLogDataCollector(filePath string) *LogDataCollector {
 	return &LogDataCollector{
-		LogsInfo: *LogsUtil.NewLogAnalyzerUtil(),
+		LogsInfo: *LogsUtil.NewLogDataCollectUtil(),
 	}
 }
 
@@ -62,5 +62,7 @@ func (ldc *LogDataCollector) UpdateInfo(matches []string) {
 	ldc.LogsInfo.Mu.Lock()
 	ldc.LogsInfo.MostRequestableResources[matches[2]]++
 	ldc.LogsInfo.MostFrequentStatusCodes[int64(statusCode)]++
+	ldc.LogsInfo.AllServerResponses = append(ldc.LogsInfo.AllServerResponses, int64(responseSize))
 	ldc.LogsInfo.Mu.Unlock()
+
 }
