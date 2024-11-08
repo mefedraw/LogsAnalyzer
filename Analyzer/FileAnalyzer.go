@@ -9,10 +9,14 @@ import (
 	"sync"
 )
 
-type FileAnalyzer struct{}
+type FileAnalyzer struct {
+	filePath string
+}
 
-func NewFileAnalyzer() *FileAnalyzer {
-	return &FileAnalyzer{}
+func NewFileAnalyzer(filePath string) *FileAnalyzer {
+	return &FileAnalyzer{
+		filePath: filePath,
+	}
 }
 
 func (fa *FileAnalyzer) Analyze(path string, parser Parsing.LogsParser) *LogsUtil.LogAnalyzerUtil {
@@ -48,7 +52,7 @@ func (fa *FileAnalyzer) Analyze(path string, parser Parsing.LogsParser) *LogsUti
 
 		go func(start, end int64) {
 			defer wg.Done()
-			fa.processChunk(path, start, end, logsAnalyzerUtil)
+			fa.processChunk(start, end, logsAnalyzerUtil, parser)
 		}(start, end)
 	}
 
@@ -59,8 +63,8 @@ func (fa *FileAnalyzer) Analyze(path string, parser Parsing.LogsParser) *LogsUti
 	return logsAnalyzerUtil
 }
 
-func (fa *FileAnalyzer) processChunk(filePath string, start, end int64, logAnalyzerUtil *LogsUtil.LogAnalyzerUtil) {
-	file, err := os.Open(filePath)
+func (fa *FileAnalyzer) processChunk(start, end int64, logAnalyzerUtil *LogsUtil.LogAnalyzerUtil, parser Parsing.LogsParser) {
+	file, err := os.Open(fa.filePath)
 	if err != nil {
 		fmt.Println("Ошибка открытия файла в горутине:", err)
 		return
@@ -91,7 +95,7 @@ func (fa *FileAnalyzer) processChunk(filePath string, start, end int64, logAnaly
 	// Разделяем прочитанный чанк на строки и обрабатываем каждую строку
 	lines := regexp.MustCompile(`\r?\n`).Split(string(buffer), -1)
 	for _, line := range lines {
-		Parse(string(line), logAnalyzerUtil)
+		parser.ParseLine(string(line), logAnalyzerUtil)
 	}
 }
 
