@@ -12,20 +12,20 @@ func NewNginxLogAnalyzer() *NginxLogAnalyzer {
 }
 
 func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectUtil) *LogsUtil.LogAnalyzedData {
-	analyzedDatabuilder := LogsUtil.NewLogAnalyzedDataBuilder()
-	analyzedDatabuilder = analyzedDatabuilder.SetTotalRequests(logsCollectedData.LogsNumber)
+	analyzedDataBuilder := LogsUtil.NewLogAnalyzedDataBuilder()
+	analyzedDataBuilder = analyzedDataBuilder.SetTotalRequests(logsCollectedData.LogsNumber)
 
 	top3StatusCodes := nla.GetTop3StatusCodes(logsCollectedData.MostFrequentStatusCodes)
 	for _, codeCountTuple := range top3StatusCodes {
-		analyzedDatabuilder = analyzedDatabuilder.AddFrequentStatusCode(codeCountTuple.Code, codeCountTuple.Count)
+		analyzedDataBuilder = analyzedDataBuilder.AddFrequentStatusCode(codeCountTuple.Code, codeCountTuple.Count)
 	}
 
 	top3Resources := nla.GetTop3ServerResources(logsCollectedData.MostRequestableResources)
 	for _, resourceCountTuple := range top3Resources {
-		analyzedDatabuilder = analyzedDatabuilder.AddFrequentResource(resourceCountTuple.Resource, resourceCountTuple.Count)
+		analyzedDataBuilder = analyzedDataBuilder.AddFrequentResource(resourceCountTuple.Resource, resourceCountTuple.Count)
 	}
 
-	analyzedData := analyzedDatabuilder.
+	analyzedData := analyzedDataBuilder.
 		SetAverageResponseSize(
 			nla.CalcAverageServerResponseSize(logsCollectedData.LogsNumber, logsCollectedData.ResponseSizeSum),
 		).
@@ -74,6 +74,9 @@ func (nla *NginxLogAnalyzer) GetTop3ServerResources(statusCodes map[string]int64
 }
 
 func (nla *NginxLogAnalyzer) CalcAverageServerResponseSize(logsNum, serverResponseSizeSum int64) int64 {
+	if logsNum == 0 {
+		return 500
+	}
 	return (serverResponseSizeSum) / (logsNum)
 }
 

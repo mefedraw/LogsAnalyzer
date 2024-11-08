@@ -15,7 +15,7 @@ type LogDataCollector struct {
 	LogsInfo LogsUtil.LogDataCollectUtil
 }
 
-func NewLogDataCollector(filePath string) *LogDataCollector {
+func NewLogDataCollector() *LogDataCollector {
 	return &LogDataCollector{
 		LogsInfo: *LogsUtil.NewLogDataCollectUtil(),
 	}
