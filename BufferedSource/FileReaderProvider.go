@@ -16,6 +16,6 @@ func (frp *FileReaderProvider) DataBufferWrap(path string) (*bufio.Reader, error
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	// defer file.Close()
 	return bufio.NewReader(file), nil
 }

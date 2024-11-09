@@ -1,7 +1,9 @@
-﻿package Rendering
+package Rendering
 
-import LogsUtil "NginxLogsAnalyzer/LogModel"
+import (
+	"NginxLogsAnalyzer/FileModel"
+)
 
 type Render interface {
-	Render(analyzedData *LogsUtil.LogAnalyzedData)
+	Render(file *FileModel.FileModel)
 }

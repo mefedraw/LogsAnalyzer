@@ -14,7 +14,7 @@ func NewHttpResponseReaderProvider() *HttpResponseReaderProvider {
 func (rp *HttpResponseReaderProvider) DataBufferWrap(path string) (*bufio.Reader, error) {
 	client := http.Client{}
 	resp, err := client.Get(path)
-	defer resp.Body.Close()
+	//defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}

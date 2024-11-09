@@ -1,27 +1,39 @@
-﻿package Rendering
+package Rendering
 
 import (
-	"NginxLogsAnalyzer/AnalyzedFile"
+	"NginxLogsAnalyzer/FileModel"
 	"fmt"
 	"net/http"
 )
 
-type MarkdownRenderer struct{}
-
-func NewMarkdownRenderer() *MarkdownRenderer {
-	return &MarkdownRenderer{}
+type MarkdownRender struct {
 }
 
-func (mdr *MarkdownRenderer) Render(file *AnalyzedFile.FileModel) string {
+func NewMarkdownRenderer() *MarkdownRender {
+	return &MarkdownRender{}
+}
+
+func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
 	data := file.FileAnalyzedData
+
+	// Форматирование даты: если дата нулевая (time.Time{}), то заменяем на "-"
+	fromDate := "-"
+	if !file.FromDate.IsZero() {
+		fromDate = file.FromDate.Format("02.01.2006")
+	}
+
+	toDate := "-"
+	if !file.ToDate.IsZero() {
+		toDate = file.ToDate.Format("02.01.2006")
+	}
 
 	// Общая информация
 	result := "#### Общая информация\n\n"
 	result += "| Метрика                | Значение     |\n"
 	result += "|------------------------|--------------|\n"
 	result += fmt.Sprintf("| Файл(-ы)               | %s           |\n", file.FileName)
-	result += fmt.Sprintf("| Начальная дата         | %s           |\n", file.FromDate.Format("02.01.2006"))
-	result += fmt.Sprintf("| Конечная дата          | %s           |\n", file.ToDate.Format("02.01.2006"))
+	result += fmt.Sprintf("| Начальная дата         | %s           |\n", fromDate)
+	result += fmt.Sprintf("| Конечная дата          | %s           |\n", toDate)
 	result += fmt.Sprintf("| Количество запросов    | %d           |\n", data.TotalRequests)
 	result += fmt.Sprintf("| Средний размер ответа  | %db          |\n", data.AverageResponseSize)
 	result += fmt.Sprintf("| 95p размера ответа     | %db          |\n", data.ResponseSize95Percentile)

@@ -46,13 +46,13 @@ func (ldc *LogDataCollector) collectLines(lines chan string, wg *sync.WaitGroup)
 			defer wg.Done()
 			for line := range lines {
 				var matches = parser.ParseLine(line, &ldc.LogsInfo)
-				ldc.UpdateInfo(*matches)
+				ldc.updateInfo(*matches)
 			}
 		}(i)
 	}
 }
 
-func (ldc *LogDataCollector) UpdateInfo(matches []string) {
+func (ldc *LogDataCollector) updateInfo(matches []string) {
 	statusCode, _ := strconv.Atoi(matches[3])
 	responseSize, _ := strconv.Atoi(matches[4])
 
