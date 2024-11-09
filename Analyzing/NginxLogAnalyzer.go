@@ -32,6 +32,7 @@ func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectU
 		SetResponseSize95Percentile(
 			nla.Calc95PercentileServerResponseSize(logsCollectedData.AllServerResponses),
 		).
+		SetUniqueIpCount(nla.GetUniqueIpCount(logsCollectedData.Ips)).
 		SetErrorStatusCodePercentage(
 			nla.CalcErrorStatusCodePercentage(logsCollectedData.LogsNumber, logsCollectedData.ErrorStatusCodeCount),
 		).Build()
@@ -80,6 +81,14 @@ func (nla *NginxLogAnalyzer) CalcAverageServerResponseSize(logsNum, serverRespon
 		return 0
 	}
 	return (serverResponseSizeSum) / (logsNum)
+}
+
+func (nla *NginxLogAnalyzer) GetUniqueIpCount(ips map[string]int64) int64 {
+	var uniqueIpCount = 0
+	for _ = range ips {
+		uniqueIpCount++
+	}
+	return int64(uniqueIpCount)
 }
 
 func (nla *NginxLogAnalyzer) CalcErrorStatusCodePercentage(logsNum, errorStatusCodeCount int64) float64 {

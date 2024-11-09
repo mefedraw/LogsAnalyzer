@@ -7,6 +7,7 @@ type LogAnalyzedData struct {
 	AverageResponseSize       int64
 	ResponseSize95Percentile  int64
 	ErrorStatusCodePercentage float64
+	UniqueIpCount             int64
 }
 
 func NewLogAnalyzedData() *LogAnalyzedData {
@@ -50,6 +51,11 @@ func (builder *LogAnalyzedDataBuilder) SetResponseSize95Percentile(responseSize9
 
 func (builder *LogAnalyzedDataBuilder) SetErrorStatusCodePercentage(errorStatusCodePercentage float64) *LogAnalyzedDataBuilder {
 	builder.logAnalyzedData.ErrorStatusCodePercentage = errorStatusCodePercentage
+	return builder
+}
+
+func (builder *LogAnalyzedDataBuilder) SetUniqueIpCount(uniqueIpCount int64) *LogAnalyzedDataBuilder {
+	builder.logAnalyzedData.UniqueIpCount = uniqueIpCount
 	return builder
 }
 

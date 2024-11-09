@@ -36,6 +36,7 @@ func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
 	result += fmt.Sprintf("| Средний размер ответа  | %db          |\n", data.AverageResponseSize)
 	result += fmt.Sprintf("| 95p размера ответа     | %db          |\n", data.ResponseSize95Percentile)
 	result += fmt.Sprintf("| Процент ошибок         | %.2f%%       |\n", data.ErrorStatusCodePercentage)
+	result += fmt.Sprintf("| Кол-во уникальных Ip   | %d       	  |\n", data.UniqueIpCount)
 
 	result += "\n#### Запрашиваемые ресурсы\n\n"
 	result += "| Ресурс                 | Количество   |\n"

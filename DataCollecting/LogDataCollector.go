@@ -45,7 +45,7 @@ func (ldc *LogDataCollector) collectLines(lines chan string, wg *sync.WaitGroup)
 		go func(id int) {
 			defer wg.Done()
 			for line := range lines {
-				var matches = parser.ParseLine(line, &ldc.LogsInfo)
+				var matches = parser.ParseLine(line)
 				ldc.updateInfo(*matches)
 			}
 		}(i)
@@ -53,18 +53,19 @@ func (ldc *LogDataCollector) collectLines(lines chan string, wg *sync.WaitGroup)
 }
 
 func (ldc *LogDataCollector) updateInfo(matches []string) {
-	statusCode, _ := strconv.Atoi(matches[3])
-	responseSize, _ := strconv.Atoi(matches[4])
+	statusCode, _ := strconv.Atoi(matches[4])
+	responseSize, _ := strconv.Atoi(matches[5])
 
 	atomic.AddInt64(&ldc.LogsInfo.ResponseSizeSum, int64(responseSize))
 	atomic.AddInt64(&ldc.LogsInfo.LogsNumber, 1)
 
 	ldc.LogsInfo.Mu.Lock()
-	ldc.LogsInfo.MostRequestableResources[matches[2]]++
+	ldc.LogsInfo.MostRequestableResources[matches[3]]++
 	ldc.LogsInfo.MostFrequentStatusCodes[int64(statusCode)]++
 	if statusCode >= 400 && statusCode <= 599 {
 		ldc.LogsInfo.ErrorStatusCodeCount++
 	}
+	ldc.LogsInfo.Ips[matches[1]]++
 	ldc.LogsInfo.AllServerResponses = append(ldc.LogsInfo.AllServerResponses, int64(responseSize))
 	ldc.LogsInfo.Mu.Unlock()
 

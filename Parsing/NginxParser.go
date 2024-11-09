@@ -1,7 +1,7 @@
 package Parsing
 
 import (
-	"NginxLogsAnalyzer/LogModel"
+	"fmt"
 	"regexp"
 )
 
@@ -12,12 +12,13 @@ func NewNginxLogsParser() *NginxLogsParser {
 	return &NginxLogsParser{}
 }
 
-func (nlp *NginxLogsParser) ParseLine(line string, logAnalyzerUtil *LogsUtil.LogDataCollectUtil) *[]string {
-	re := regexp.MustCompile(`\[(\d{2}/\w{3}/\d{4}):.*?\] "(?:GET|HEAD|POST|PATCH) (/downloads/[\w\d_]+) HTTP/.*?" (\d{3}) (\d+)`)
+func (nlp *NginxLogsParser) ParseLine(line string) *[]string {
+	re := regexp.MustCompile(`^([\da-fA-F:.]+) - - \[(\d{2}/\w{3}/\d{4}):\d{2}:\d{2}:\d{2} [+\-]\d{4}\] ".*? ([^"]+) HTTP/[\d.]+" (\d{3}) (\d+)`)
 	matches := re.FindStringSubmatch(line)
 
-	if len(matches) < 5 {
-		return nil
+	if len(matches) < 6 {
+		fmt.Println(line)
+		panic("пиздец")
 	}
 	return &matches
 }
