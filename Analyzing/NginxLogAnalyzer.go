@@ -32,7 +32,8 @@ func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectU
 		SetResponseSize95Percentile(
 			nla.Calc95PercentileServerResponseSize(logsCollectedData.AllServerResponses),
 		).
-		Build()
+		SetErrorStatusCodePercentage(
+			nla.CalcErrorStatusCodePercantage(logsCollectedData.LogsNumber, logsCollectedData.ResponseSizeSum)).Build()
 
 	return &analyzedData
 }
@@ -80,6 +81,10 @@ func (nla *NginxLogAnalyzer) CalcAverageServerResponseSize(logsNum, serverRespon
 	return (serverResponseSizeSum) / (logsNum)
 }
 
+func (nla *NginxLogAnalyzer) CalcErrorStatusCodePercantage(logsnum, errorStatusCodeCount int64) float64 {
+	return float64(errorStatusCodeCount) / float64(logsnum)
+}
+
 func (nla *NginxLogAnalyzer) Calc95PercentileServerResponseSize(responseSizes []int64) int64 {
 	if len(responseSizes) == 0 {
 		return 0
@@ -93,6 +98,5 @@ func (nla *NginxLogAnalyzer) Calc95PercentileServerResponseSize(responseSizes []
 	if index >= len(responseSizes) {
 		index = len(responseSizes) - 1
 	}
-
 	return responseSizes[index]
 }

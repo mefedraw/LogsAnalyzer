@@ -1,11 +1,12 @@
 ﻿package LogsUtil
 
 type LogAnalyzedData struct {
-	TotalRequests            int64
-	MostFrequentResources    []ResourceCount
-	MostFrequentStatusCodes  []CodeCountTuple
-	AverageResponseSize      int64
-	ResponseSize95Percentile int64
+	TotalRequests             int64
+	MostFrequentResources     []ResourceCount
+	MostFrequentStatusCodes   []CodeCountTuple
+	AverageResponseSize       int64
+	ResponseSize95Percentile  int64
+	ErrorStatusCodePercentage float64
 }
 
 func NewLogAnalyzedData() *LogAnalyzedData {
@@ -44,6 +45,11 @@ func (builder *LogAnalyzedDataBuilder) SetAverageResponseSize(averageResponseSiz
 
 func (builder *LogAnalyzedDataBuilder) SetResponseSize95Percentile(responseSize95Percentile int64) *LogAnalyzedDataBuilder {
 	builder.logAnalyzedData.ResponseSize95Percentile = responseSize95Percentile
+	return builder
+}
+
+func (builder *LogAnalyzedDataBuilder) SetErrorStatusCodePercentage(errorStatusCodePercentage float64) *LogAnalyzedDataBuilder {
+	builder.logAnalyzedData.ErrorStatusCodePercentage = errorStatusCodePercentage
 	return builder
 }
 
