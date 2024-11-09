@@ -11,8 +11,6 @@ import (
 
 func main() {
 	filePath := "https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs"
-	//wg := sync.WaitGroup{}
-	//wg.Add(1)
 	reader, _ := BufferedSource.NewHttpResponseReaderProvider().DataBufferWrap(filePath)
 	collector := DataCollecting.NewLogDataCollector()
 	_ = collector.CollectData(reader)
@@ -21,6 +19,5 @@ func main() {
 		SetFileName(filePath).
 		SetFileAnalyzedData(*analyzedData).Build()
 	renderedData := Rendering.NewMarkdownRenderer().Render(&fileData)
-	//wg.Wait()
 	fmt.Println(renderedData)
 }

@@ -62,6 +62,9 @@ func (ldc *LogDataCollector) updateInfo(matches []string) {
 	ldc.LogsInfo.Mu.Lock()
 	ldc.LogsInfo.MostRequestableResources[matches[2]]++
 	ldc.LogsInfo.MostFrequentStatusCodes[int64(statusCode)]++
+	if statusCode >= 400 && statusCode <= 599 {
+		ldc.LogsInfo.ErrorStatusCodeCount++
+	}
 	ldc.LogsInfo.AllServerResponses = append(ldc.LogsInfo.AllServerResponses, int64(responseSize))
 	ldc.LogsInfo.Mu.Unlock()
 

@@ -16,7 +16,6 @@ func NewMarkdownRenderer() *MarkdownRender {
 func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
 	data := file.FileAnalyzedData
 
-	// Форматирование даты: если дата нулевая (time.Time{}), то заменяем на "-"
 	fromDate := "-"
 	if !file.FromDate.IsZero() {
 		fromDate = file.FromDate.Format("02.01.2006")
@@ -27,7 +26,6 @@ func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
 		toDate = file.ToDate.Format("02.01.2006")
 	}
 
-	// Общая информация
 	result := "#### Общая информация\n\n"
 	result += "| Метрика                | Значение     |\n"
 	result += "|------------------------|--------------|\n"
@@ -37,8 +35,8 @@ func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
 	result += fmt.Sprintf("| Количество запросов    | %d           |\n", data.TotalRequests)
 	result += fmt.Sprintf("| Средний размер ответа  | %db          |\n", data.AverageResponseSize)
 	result += fmt.Sprintf("| 95p размера ответа     | %db          |\n", data.ResponseSize95Percentile)
+	result += fmt.Sprintf("| Процент ошибок         | %.2f%%       |\n", data.ErrorStatusCodePercentage)
 
-	// Запрашиваемые ресурсы
 	result += "\n#### Запрашиваемые ресурсы\n\n"
 	result += "| Ресурс                 | Количество   |\n"
 	result += "|------------------------|--------------|\n"
@@ -46,7 +44,6 @@ func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
 		result += fmt.Sprintf("| %-22s | %d           |\n", resource.Resource, resource.Count)
 	}
 
-	// Коды ответа
 	result += "\n#### Коды ответа\n\n"
 	result += "| Код  | Имя                  | Количество   |\n"
 	result += "|------|----------------------|--------------|\n"
