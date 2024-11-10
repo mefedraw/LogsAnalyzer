@@ -13,7 +13,12 @@ func NewMarkdownRenderer() *MarkdownRender {
 	return &MarkdownRender{}
 }
 
-func (mdr *MarkdownRender) Render(file *FileModel.FileModel) string {
+func (mdr *MarkdownRender) Render(file *FileModel.FileModel) {
+	renderInfo := mdr.BuildReportString(file)
+	fmt.Print(renderInfo)
+}
+
+func (mdr *MarkdownRender) BuildReportString(file *FileModel.FileModel) string {
 	data := file.FileAnalyzedData
 
 	fromDate := "-"

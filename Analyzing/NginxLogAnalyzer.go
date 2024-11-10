@@ -12,20 +12,20 @@ func NewNginxLogAnalyzer() *NginxLogAnalyzer {
 }
 
 func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectUtil) *LogsUtil.LogAnalyzedData {
-	analyzedDatabuilder := LogsUtil.NewLogAnalyzedDataBuilder()
-	analyzedDatabuilder = analyzedDatabuilder.SetTotalRequests(logsCollectedData.LogsNumber)
+	analyzedDataBuilder := LogsUtil.NewLogAnalyzedDataBuilder()
+	analyzedDataBuilder = analyzedDataBuilder.SetTotalRequests(logsCollectedData.LogsNumber)
 
 	top3StatusCodes := nla.GetTop3StatusCodes(logsCollectedData.MostFrequentStatusCodes)
 	for _, codeCountTuple := range top3StatusCodes {
-		analyzedDatabuilder = analyzedDatabuilder.AddFrequentStatusCode(codeCountTuple.Code, codeCountTuple.Count)
+		analyzedDataBuilder = analyzedDataBuilder.AddFrequentStatusCode(codeCountTuple.Code, codeCountTuple.Count)
 	}
 
 	top3Resources := nla.GetTop3ServerResources(logsCollectedData.MostRequestableResources)
 	for _, resourceCountTuple := range top3Resources {
-		analyzedDatabuilder = analyzedDatabuilder.AddFrequentResource(resourceCountTuple.Resource, resourceCountTuple.Count)
+		analyzedDataBuilder = analyzedDataBuilder.AddFrequentResource(resourceCountTuple.Resource, resourceCountTuple.Count)
 	}
 
-	analyzedData := analyzedDatabuilder.
+	analyzedData := analyzedDataBuilder.
 		SetAverageResponseSize(
 			nla.CalcAverageServerResponseSize(logsCollectedData.LogsNumber, logsCollectedData.ResponseSizeSum),
 		).
@@ -40,7 +40,7 @@ func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectU
 	return &analyzedData
 }
 
-func (nla *NginxLogAnalyzer) GetTop3StatusCodes(statusCodes map[int64]int64) [3]LogsUtil.CodeCountTuple {
+func (nla *NginxLogAnalyzer) GetTop3StatusCodes(statusCodes map[int64]int64) []LogsUtil.CodeCountTuple {
 	var tuples []LogsUtil.CodeCountTuple
 	for code, count := range statusCodes {
 		tuples = append(tuples, LogsUtil.CodeCountTuple{Code: code, Count: count})
@@ -50,15 +50,15 @@ func (nla *NginxLogAnalyzer) GetTop3StatusCodes(statusCodes map[int64]int64) [3]
 		return tuples[i].Count > tuples[j].Count
 	})
 
-	var top3 [3]LogsUtil.CodeCountTuple
+	var top3 []LogsUtil.CodeCountTuple
 	for i := 0; i < 3 && i < len(tuples); i++ {
-		top3[i] = tuples[i]
+		top3 = append(top3, tuples[i])
 	}
 
 	return top3
 }
 
-func (nla *NginxLogAnalyzer) GetTop3ServerResources(statusCodes map[string]int64) [3]LogsUtil.ResourceCount {
+func (nla *NginxLogAnalyzer) GetTop3ServerResources(statusCodes map[string]int64) []LogsUtil.ResourceCount {
 	var tuples []LogsUtil.ResourceCount
 	for response, count := range statusCodes {
 		tuples = append(tuples, LogsUtil.ResourceCount{Resource: response, Count: count})
@@ -68,9 +68,9 @@ func (nla *NginxLogAnalyzer) GetTop3ServerResources(statusCodes map[string]int64
 		return tuples[i].Count > tuples[j].Count
 	})
 
-	var top3 [3]LogsUtil.ResourceCount
+	var top3 []LogsUtil.ResourceCount
 	for i := 0; i < 3 && i < len(tuples); i++ {
-		top3[i] = tuples[i]
+		top3 = append(top3, tuples[i])
 	}
 
 	return top3

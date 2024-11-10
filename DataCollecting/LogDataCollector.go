@@ -7,17 +7,27 @@ import (
 	"bufio"
 	"runtime"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 type LogDataCollector struct {
 	LogsInfo LogsUtil.LogDataCollectUtil
+	FromDate time.Time
+	ToDate   time.Time
+	Filter   string
 }
 
-func NewLogDataCollector() *LogDataCollector {
+func NewLogDataCollector(fromDate, toDate, filter string) *LogDataCollector {
+	FromDate, _ := parseUserDate(fromDate)
+	ToDate, _ := parseUserDate(toDate)
 	return &LogDataCollector{
 		LogsInfo: *LogsUtil.NewLogDataCollectUtil(),
+		FromDate: FromDate,
+		ToDate:   ToDate,
+		Filter:   filter,
 	}
 }
 
@@ -45,11 +55,28 @@ func (ldc *LogDataCollector) collectLines(lines chan string, wg *sync.WaitGroup)
 		go func(id int) {
 			defer wg.Done()
 			for line := range lines {
-				var matches = parser.ParseLine(line)
-				ldc.updateInfo(*matches)
+				if ldc.Filter == "" || strings.Contains(line, ldc.Filter) {
+					var matches = *parser.ParseLine(line)
+					if matches == nil {
+						continue
+					}
+					date, _ := parseLogDate(matches[2])
+					if !ldc.ToDate.IsZero() || !ldc.FromDate.IsZero() {
+						if (ldc.FromDate.IsZero() || ldc.FromDate.Before(date) || ldc.FromDate.Equal(date)) &&
+							(ldc.ToDate.IsZero() || ldc.ToDate.After(date) || ldc.ToDate.Equal(date)) {
+							ldc.updateInfo(matches)
+						}
+					} else {
+						ldc.updateInfo(matches)
+					}
+				}
 			}
 		}(i)
 	}
+}
+
+func parseLogDate(logDate string) (time.Time, error) {
+	return time.Parse("02/Jan/2006", logDate)
 }
 
 func (ldc *LogDataCollector) updateInfo(matches []string) {
@@ -69,4 +96,11 @@ func (ldc *LogDataCollector) updateInfo(matches []string) {
 	ldc.LogsInfo.AllServerResponses = append(ldc.LogsInfo.AllServerResponses, int64(responseSize))
 	ldc.LogsInfo.Mu.Unlock()
 
+}
+
+func parseUserDate(userDate string) (time.Time, error) {
+	if userDate == "" {
+		return time.Time{}, nil
+	}
+	return time.Parse("2006-01-02", userDate)
 }

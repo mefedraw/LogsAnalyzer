@@ -1,6 +1,8 @@
 package LogsUtil
 
-import "sync"
+import (
+	"sync"
+)
 
 type LogDataCollectUtil struct {
 	LogsNumber               int64
@@ -20,4 +22,19 @@ func NewLogDataCollectUtil() *LogDataCollectUtil {
 		Ips:                      make(map[string]int64),
 		AllServerResponses:       make([]int64, 0),
 	}
+}
+
+type LogDataCollectUtilBuilder struct {
+	logDataCollectUtil *LogDataCollectUtil
+}
+
+func NewLogDataCollectUtilBuilder() *LogDataCollectUtilBuilder {
+
+	return &LogDataCollectUtilBuilder{
+		logDataCollectUtil: NewLogDataCollectUtil(),
+	}
+}
+
+func (b *LogDataCollectUtilBuilder) Build() *LogDataCollectUtil {
+	return b.logDataCollectUtil
 }

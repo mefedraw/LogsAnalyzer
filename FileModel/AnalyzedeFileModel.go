@@ -2,6 +2,8 @@ package FileModel
 
 import (
 	LogsUtil "NginxLogsAnalyzer/LogModel"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -12,41 +14,48 @@ type FileModel struct {
 	FileAnalyzedData LogsUtil.LogAnalyzedData
 }
 
-// Структура Builder для FileModel
 type FileModelBuilder struct {
 	fileModel FileModel
 }
 
-// Функция для создания нового билдера
 func NewFileModelBuilder() *FileModelBuilder {
 	return &FileModelBuilder{}
 }
 
-// Метод для задания имени файла
 func (b *FileModelBuilder) SetFileName(fileName string) *FileModelBuilder {
-	b.fileModel.FileName = fileName
+
+	b.fileModel.FileName = getFileName(fileName)
 	return b
 }
 
-// Метод для задания начальной даты
-func (b *FileModelBuilder) SetFromDate(fromDate time.Time) *FileModelBuilder {
-	b.fileModel.FromDate = fromDate
+func (b *FileModelBuilder) SetFromDate(fromDate string) *FileModelBuilder {
+	b.fileModel.FromDate, _ = parseUserDate(fromDate)
 	return b
 }
 
-// Метод для задания конечной даты
-func (b *FileModelBuilder) SetToDate(toDate time.Time) *FileModelBuilder {
-	b.fileModel.ToDate = toDate
+func (b *FileModelBuilder) SetToDate(toDate string) *FileModelBuilder {
+	b.fileModel.ToDate, _ = parseUserDate(toDate)
 	return b
 }
 
-// Метод для задания данных анализа
 func (b *FileModelBuilder) SetFileAnalyzedData(data LogsUtil.LogAnalyzedData) *FileModelBuilder {
 	b.fileModel.FileAnalyzedData = data
 	return b
 }
 
-// Метод для построения и возврата FileModel
 func (b *FileModelBuilder) Build() FileModel {
 	return b.fileModel
+}
+
+func parseUserDate(userDate string) (time.Time, error) {
+	if userDate == "" {
+		return time.Time{}, nil
+	}
+	return time.Parse("2006-01-02", userDate)
+}
+
+func getFileName(path string) string {
+	fileNameWithExt := filepath.Base(path)
+	fileName := strings.TrimSuffix(fileNameWithExt, filepath.Ext(fileNameWithExt))
+	return fileName
 }
