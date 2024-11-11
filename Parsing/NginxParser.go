@@ -14,7 +14,6 @@ func NewNginxLogsParser() *NginxLogsParser {
 }
 
 func (nlp *NginxLogsParser) ParseLine(line string) *[]string {
-	// Удаление BOM или других невидимых символов
 	line = strings.TrimLeft(line, "\ufeff")
 
 	re := regexp.MustCompile(`^([\da-fA-F:.]+) - - \[(\d{2}/\w{3}/\d{4}):\d{2}:\d{2}:\d{2} [+\-]\d{4}\] "\w+ ([^ ]+) HTTP/[\d.]+" (\d{3}) (\d+)`)
@@ -22,7 +21,7 @@ func (nlp *NginxLogsParser) ParseLine(line string) *[]string {
 
 	if len(matches) < 6 {
 		fmt.Println(line)
-		panic("пиздец")
+		return nil
 	}
 	return &matches
 }

@@ -37,7 +37,8 @@ func (ldc *LogDataCollector) CollectData(reader *bufio.Reader) error {
 	go func() {
 		err := dataReader.ReadBuffer(reader, lines)
 		if err != nil {
-			return
+			return // тут наверное не стоит ошибку возвращать? NewErrLogDataCollector(err.Error())
+			// или делать канал с ошибками? errors <- err
 		}
 	}()
 
@@ -73,6 +74,7 @@ func (ldc *LogDataCollector) collectLines(lines chan string, wg *sync.WaitGroup)
 			}
 		}(i)
 	}
+
 }
 
 func parseLogDate(logDate string) (time.Time, error) {

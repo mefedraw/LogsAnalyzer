@@ -16,12 +16,12 @@ func NewApplication() *Application {
 
 func (a *Application) Run() {
 	inputData := Input.NewUserInput()
-	inputData.Input()
+	_ = inputData.Input()
 	bufProvider, _ := Service.NewFileReaderProviderService().GetReader(inputData.Path)
 	reader, _ := bufProvider.DataBufferWrap(inputData.Path)
 	collector := DataCollecting.NewLogDataCollector(inputData.FromDate, inputData.ToDate, inputData.Filter)
 	_ = collector.CollectData(reader)
-	analyzedData := Analyzing.NewNginxLogAnalyzer().Analyze(&collector.LogsInfo)
+	analyzedData, _ := Analyzing.NewNginxLogAnalyzer().Analyze(&collector.LogsInfo)
 
 	fileData := FileModel.NewFileModelBuilder().
 		SetFileName(inputData.Path).

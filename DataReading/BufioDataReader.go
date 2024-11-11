@@ -1,6 +1,7 @@
 ﻿package DataReading
 
 import (
+	"NginxLogsAnalyzer/Errors/DataReadingError"
 	"bufio"
 	"io"
 )
@@ -19,7 +20,7 @@ func (bd *BufioDataReader) ReadBuffer(reader *bufio.Reader, lines chan string) e
 			if err == io.EOF {
 				break
 			} else {
-				return err
+				return DataReadingError.NewErrDataReader(err.Error())
 			}
 		}
 		lines <- line

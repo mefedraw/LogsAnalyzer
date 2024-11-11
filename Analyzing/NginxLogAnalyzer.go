@@ -11,7 +11,7 @@ func NewNginxLogAnalyzer() *NginxLogAnalyzer {
 	return &NginxLogAnalyzer{}
 }
 
-func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectUtil) *LogsUtil.LogAnalyzedData {
+func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectUtil) (*LogsUtil.LogAnalyzedData, error) {
 	analyzedDataBuilder := LogsUtil.NewLogAnalyzedDataBuilder()
 	analyzedDataBuilder = analyzedDataBuilder.SetTotalRequests(logsCollectedData.LogsNumber)
 
@@ -37,7 +37,7 @@ func (nla *NginxLogAnalyzer) Analyze(logsCollectedData *LogsUtil.LogDataCollectU
 			nla.CalcErrorStatusCodePercentage(logsCollectedData.LogsNumber, logsCollectedData.ErrorStatusCodeCount),
 		).Build()
 
-	return &analyzedData
+	return &analyzedData, nil
 }
 
 func (nla *NginxLogAnalyzer) GetTop3StatusCodes(statusCodes map[int64]int64) []LogsUtil.CodeCountTuple {
@@ -84,11 +84,7 @@ func (nla *NginxLogAnalyzer) CalcAverageServerResponseSize(logsNum, serverRespon
 }
 
 func (nla *NginxLogAnalyzer) GetUniqueIpCount(ips map[string]int64) int64 {
-	var uniqueIpCount = 0
-	for _ = range ips {
-		uniqueIpCount++
-	}
-	return int64(uniqueIpCount)
+	return int64(len(ips))
 }
 
 func (nla *NginxLogAnalyzer) CalcErrorStatusCodePercentage(logsNum, errorStatusCodeCount int64) float64 {

@@ -2,7 +2,7 @@
 
 import (
 	"NginxLogsAnalyzer/BufferedSource"
-	"errors"
+	"NginxLogsAnalyzer/Errors/FileReaderProviderServiceError"
 	"net/url"
 	"os"
 )
@@ -37,6 +37,6 @@ func (frp *FileReaderProviderService) GetReader(path string) (BufferedSource.Buf
 	} else if IsFile(path) {
 		return BufferedSource.NewFileReaderProvider(), nil
 	} else {
-		return nil, errors.New("File not found")
+		return nil, FileReaderProviderServiceError.NewErrorFileReaderProvider("incorrect file path")
 	}
 }

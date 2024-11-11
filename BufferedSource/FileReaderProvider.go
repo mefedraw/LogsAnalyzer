@@ -1,8 +1,8 @@
 ﻿package BufferedSource
 
 import (
+	"NginxLogsAnalyzer/Errors/BufferedSourceError"
 	"bufio"
-	"fmt"
 	"os"
 )
 
@@ -14,13 +14,12 @@ func NewFileReaderProvider() *FileReaderProvider {
 
 func (frp *FileReaderProvider) DataBufferWrap(path string) (*bufio.Reader, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return nil, fmt.Errorf("файл не найден: %s", path)
+		return nil, BufferedSourceError.NewErrorFileReaderProvider("file is not found")
 	}
 
-	// Открываем файл
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при открытии файла %s: %v", path, err)
+		return nil, BufferedSourceError.NewErrorFileReaderProvider("is not possible to open file")
 	}
 
 	reader := bufio.NewReader(file)

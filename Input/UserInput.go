@@ -1,6 +1,7 @@
 ﻿package Input
 
 import (
+	"NginxLogsAnalyzer/Errors/UserInputError"
 	"bufio"
 	"fmt"
 	"os"
@@ -20,27 +21,28 @@ func NewUserInput() *UserInput {
 	return &UserInput{}
 }
 
-func (ui *UserInput) Input() {
+func (ui *UserInput) Input() error {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Введите команду: ")
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
-	fmt.Println("Введенная команда:", input)
-	_ = ui.ParseInput(input)
+	err := ui.ParseInput(input)
+	return err
 }
 
 func (ui *UserInput) ParseInput(command string) error {
-	// Убираем префикс команды "analyzer " и разбиваем оставшуюся строку на аргументы
+	if strings.Split(command, " ")[0] != "analyzer" {
+		return UserInputError.NewErrUserInput("incorrect command")
+	}
 	command = strings.TrimPrefix(command, "analyzer ")
 	args := strings.Fields(command)
 
-	// Итерируем по аргументам и парсим ключи и значения
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--path":
 			if i+1 < len(args) {
 				ui.Path = args[i+1]
-				i++ // Переходим к следующему аргументу
+				i++
 			}
 		case "--from":
 			if i+1 < len(args) {
@@ -70,12 +72,11 @@ func (ui *UserInput) ParseInput(command string) error {
 		}
 	}
 
-	// Проверка обязательных параметров
 	if ui.Path == "" {
-		return fmt.Errorf("обязательный параметр --path отсутствует")
+		return UserInputError.NewErrUserInput("--path does not exist")
 	}
 	if ui.Format == "" {
-		ui.Format = "markdown" // Устанавливаем формат по умолчанию, если не указан
+		ui.Format = "markdown"
 	}
 
 	return nil

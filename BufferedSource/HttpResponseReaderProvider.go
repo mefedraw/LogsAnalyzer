@@ -1,6 +1,7 @@
 ﻿package BufferedSource
 
 import (
+	"NginxLogsAnalyzer/Errors/BufferedSourceError"
 	"bufio"
 	"net/http"
 )
@@ -14,9 +15,8 @@ func NewHttpResponseReaderProvider() *HttpResponseReaderProvider {
 func (rp *HttpResponseReaderProvider) DataBufferWrap(path string) (*bufio.Reader, error) {
 	client := http.Client{}
 	resp, err := client.Get(path)
-	//defer resp.Body.Close()
 	if err != nil {
-		return nil, err
+		return nil, BufferedSourceError.NewErrHttpResponseReaderProvider(err.Error())
 	}
 	file := bufio.NewReader(resp.Body)
 	return file, nil
