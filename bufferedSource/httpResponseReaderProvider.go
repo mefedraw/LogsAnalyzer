@@ -3,6 +3,7 @@
 import (
 	"NginxLogsAnalyzer/Errors/BufferedSourceError"
 	"bufio"
+	"fmt"
 	"net/http"
 )
 
@@ -18,6 +19,13 @@ func (rp *HttpResponseReaderProvider) DataBufferWrap(path string) (*bufio.Reader
 	if err != nil {
 		return nil, BufferedSourceError.NewErrHttpResponseReaderProvider(err.Error())
 	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, BufferedSourceError.NewErrHttpResponseReaderProvider(
+			fmt.Sprintf("unexpected status code: %d", resp.StatusCode),
+		)
+	}
+
 	file := bufio.NewReader(resp.Body)
 	return file, nil
 }
