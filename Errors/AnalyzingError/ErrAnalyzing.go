@@ -11,5 +11,5 @@ func NewErrAnalyzing(msg string) *ErrAnalyzing {
 }
 
 func (e *ErrAnalyzing) Error() string {
-	return fmt.Sprintf("Analyzing error: %s", e.msg)
+	return fmt.Sprintf("analyzing error: %s", e.msg)
 }

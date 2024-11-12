@@ -11,5 +11,5 @@ func NewErrUserInput(msg string) *ErrUserInput {
 }
 
 func (e *ErrUserInput) Error() string {
-	return fmt.Sprintf("Input error: %s", e.msg)
+	return fmt.Sprintf("input error: %s", e.msg)
 }
